@@ -1,0 +1,8 @@
+pandas
+numpy
+xgboost
+matplotlib
+seaborn
+scikit-learn
+ipython
+jupyter
