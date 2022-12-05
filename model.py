@@ -9,7 +9,7 @@ from pathlib import Path
 train_df = pd.read_csv("preprocessed_train.csv")
 test_df = pd.read_csv("data/test.csv")
 
-from main import pipeline
+from preprocessing import pipeline
 
 
 test_df = pipeline(test_df)
@@ -42,5 +42,6 @@ save_model(best_model, "best_model")
 predictions = predict_model(best_model, data=test_df)
 
 
-predictions = predictions[["individualnumber", "response"]]
-predictions.to_csv("predictions.csv", index=False)
+predictions = predictions[["individualnumber", "Label"]]
+predictions = predictions.rename(columns={"Label": "response"})
+predictions.to_csv("submission.csv", index=False)

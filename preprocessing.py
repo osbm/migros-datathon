@@ -22,9 +22,22 @@ transaction_sale_preprocessed_df = pd.read_csv("transaction_sale_preprocessed.cs
 
 def add_customer_data(df):
     df = df.copy()
+    print(df.shape)        
+    # add customer data according to individualnumber
     df = df.merge(customer_df, on="individualnumber", how="left")
-    df = df.merge(customer_account_df, on="individualnumber", how="left")
 
+    df = df.merge(customer_account_df, on="individualnumber", how="left")
+    # print all the new rows that are added
+    
+    # some customers have multiple cardnumbers
+    # we will use the first cardnumber
+    
+    df = df.drop_duplicates(subset="individualnumber")
+
+    
+    print(df.shape)        
+    
+    # this operation changes row number be
     return df
 
 
@@ -45,9 +58,13 @@ def add_total_amount_spent(df):
 
 def pipeline(df):
     df = df.copy()
+    #print(df.shape)
     df = add_customer_data(df)
+    #print(df.shape)
     df = add_number_of_transactions(df)
+    #print(df.shape)
     df = add_total_amount_spent(df)
+    #print(df.shape)
     return df
 
 
