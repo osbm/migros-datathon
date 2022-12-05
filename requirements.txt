@@ -6,3 +6,5 @@ seaborn
 scikit-learn
 ipython
 jupyter
+lightgbm
+pycaret
