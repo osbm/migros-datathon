@@ -8,3 +8,15 @@ python -m venv .venv
 .venv/bin/activate
 pip install -r requirements.txt
 ```
+
+# plan
+
+### Deal with imbalanced data
+
+oversampling and undersampling
+data augmentation
+
+### Feature engineering
+
+### Ensemble
+VotingClassifier

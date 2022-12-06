@@ -22,7 +22,6 @@ transaction_sale_preprocessed_df = pd.read_csv("transaction_sale_preprocessed.cs
 
 def add_customer_data(df):
     df = df.copy()
-    print(df.shape)        
     # add customer data according to individualnumber
     df = df.merge(customer_df, on="individualnumber", how="left")
 
@@ -33,9 +32,6 @@ def add_customer_data(df):
     # we will use the first cardnumber
     
     df = df.drop_duplicates(subset="individualnumber")
-
-    
-    print(df.shape)        
     
     # this operation changes row number be
     return df
@@ -67,8 +63,18 @@ def pipeline(df):
     #print(df.shape)
     return df
 
+def resample(df):
+    # this function resamples the data to have equal number of 0 and 1
+    df = df.copy()
+    df_0 = df[df.response == 0]
+    df_1 = df[df.response == 1]
+    df_0 = df_0.sample(n=df_1.shape[0], random_state=42)
+    df = pd.concat([df_0, df_1], axis=0)
+    return df
+
 
 train_df = pipeline(train_df)
+train_df = resample(train_df)
 train_df.to_csv("preprocessed_train.csv", index=False)
 
 test_df = pipeline(test_df)
