@@ -70,3 +70,6 @@ def pipeline(df):
 
 train_df = pipeline(train_df)
 train_df.to_csv("preprocessed_train.csv", index=False)
+
+test_df = pipeline(test_df)
+test_df.to_csv("preprocessed_test.csv", index=False)

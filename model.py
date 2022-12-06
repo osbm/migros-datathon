@@ -7,12 +7,14 @@ import numpy as np
 from pathlib import Path
 
 train_df = pd.read_csv("preprocessed_train.csv")
-test_df = pd.read_csv("data/test.csv")
-
-from preprocessing import pipeline
+test_df = pd.read_csv("preprocessed_test.csv")
 
 
-test_df = pipeline(test_df)
+
+
+
+
+
 
 # drop individualnumber and cardnumber
 #train_df = train_df.drop(["individualnumber", "cardnumber"], axis=1)
