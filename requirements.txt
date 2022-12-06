@@ -8,3 +8,4 @@ ipython
 jupyter
 lightgbm
 pycaret
+catboost
