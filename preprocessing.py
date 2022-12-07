@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 from imblearn.over_sampling import SMOTE
 from pathlib import Path
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 dataset_folder = Path("data/")
 
@@ -49,6 +51,12 @@ def add_total_amount_spent(df):
     df["total_amount_spent"] = df.cardnumber.map(
         transaction_sale_preprocessed_df.groupby("cardnumber").amount.sum()
     )
+    return df
+
+def add_number_of_cards(df):
+    df = df.copy()
+    counts = customer_account_df.individualnumber.value_counts()
+    df["number_of_cards"] = df.individualnumber.map(counts)
     return df
 
 
@@ -111,13 +119,14 @@ def drop_columns(df, columns=["cardnumber", "individualnumber"]):
 def pipeline(df, train=True):
     category_cols = [
         "gender",
-        "city_code",
+        #"city_code", # generates ~80 columns after one-hot encoding
     ]
     print(df.shape)
     df = df.copy()
     df = add_customer_data(df)
     df = add_number_of_transactions(df)
     df = add_total_amount_spent(df)
+    df = add_number_of_cards(df)
     df = drop_columns(df)
     df = one_hot_encode(df, category_cols)
     df = fill_na(df)
@@ -127,12 +136,18 @@ def pipeline(df, train=True):
         df = apply_SMOTE(df)
     else:
         df = add_missing_columns(df)
-    print(df.columns)
+    
+
     return df
 
 if __name__ == "__main__":
 
     train_df = pipeline(train_df, train=True)
+    # show correlation matrix according to response using seaborn
+    
+    sns.heatmap(train_df.corr()[["response"]].sort_values(by="response"), annot=True)
+    plt.savefig("correlation_matrix.png")
+
     train_df.to_csv("preprocessed_train.csv", index=False)
 
     test_df = pipeline(test_df, train=False)
