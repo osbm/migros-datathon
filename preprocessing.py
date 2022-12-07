@@ -78,11 +78,16 @@ def fill_na(df):
 
 def add_missing_columns(df):
     df = df.copy()
+    
+    train_df = pd.read_csv("preprocessed_train.csv")
+
     missing_cols = set(train_df.columns) - set(df.columns)
     for c in missing_cols:
         df[c] = 0
     # reorder the columns
     df = df[train_df.columns]
+    # drop response column
+    df = df.drop("response", axis=1)
     return df
 
 
@@ -108,6 +113,7 @@ def pipeline(df, train=True):
         "gender",
         "city_code",
     ]
+    print(df.shape)
     df = df.copy()
     df = add_customer_data(df)
     df = add_number_of_transactions(df)
@@ -115,16 +121,19 @@ def pipeline(df, train=True):
     df = drop_columns(df)
     df = one_hot_encode(df, category_cols)
     df = fill_na(df)
-    df = add_missing_columns(df)
 
     if train:
         # df = resample(df)
         df = apply_SMOTE(df)
+    else:
+        df = add_missing_columns(df)
+    print(df.columns)
     return df
 
+if __name__ == "__main__":
 
-train_df = pipeline(train_df, train=True)
-train_df.to_csv("preprocessed_train.csv", index=False)
+    train_df = pipeline(train_df, train=True)
+    train_df.to_csv("preprocessed_train.csv", index=False)
 
-test_df = pipeline(test_df, train=False)
-test_df.to_csv("preprocessed_test.csv", index=False)
+    test_df = pipeline(test_df, train=False)
+    test_df.to_csv("preprocessed_test.csv", index=False)

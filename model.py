@@ -3,15 +3,20 @@ import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, f1_score
+
+from sklearn.ensemble import VotingClassifier
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
 from lightgbm import LGBMClassifier
 from catboost import CatBoostClassifier
 
-from sklearn.ensemble import VotingClassifier
+import os
+
+if not os.path.exists("preprocessed_train.csv"):
+    raise Exception("preprocessed_train.csv does not exist. Please run preprocessing.py first")
 
 train_df = pd.read_csv("preprocessed_train.csv")
-test_df = pd.read_csv("preprocessed_test.csv")
+
 
 # model time and use f1 score
 
@@ -30,7 +35,6 @@ print("logreg accuracy: ", accuracy_score(y_test, y_pred))
 print("logreg f1 score: ", f1_score(y_test, y_pred))
 
 # random forest
-
 
 rf = RandomForestClassifier()
 rf.fit(X_train, y_train)
@@ -52,13 +56,11 @@ print("lgbm f1 score: ", f1_score(y_test, y_pred))
 
 lgbm_pred = y_pred
 
-
 cat = CatBoostClassifier()
 cat.fit(X_train, y_train)
 y_pred = cat.predict(X_test)
 print("cat accuracy: ", accuracy_score(y_test, y_pred))
 print("cat f1 score: ", f1_score(y_test, y_pred))
-
 
 # create the sub models
 estimators = [
@@ -72,14 +74,13 @@ estimators = [
 # create the ensemble model
 ensemble = VotingClassifier(estimators)
 ensemble.fit(X_train, y_train)
-
 y_pred = ensemble.predict(X_test)
 print("ensemble accuracy: ", accuracy_score(y_test, y_pred))
 print("ensemble f1 score: ", f1_score(y_test, y_pred))
 
 
+'''
 X = test_df.drop(["individualnumber", "cardnumber"], axis=1)
-
 # categorical features
 category_cols = [
     "gender",
@@ -99,8 +100,18 @@ print("missing", missing_cols)
 # add a missing column in test set with default value equal to 0
 for c in missing_cols:
     X[c] = 0
+'''
 
-lgbm_pred = ensemble.predict(X)
+test_df = pd.read_csv("preprocessed_test.csv")
+
+individualnumber = pd.read_csv("data/test.csv")["individualnumber"]
+
+lgbm_pred = ensemble.predict(test_df)
+# add response
 test_df["response"] = lgbm_pred
-test_df = test_df[["individualnumber", "response"]]
+# drop every other column
+test_df = test_df[["response"]]
+# add individualnumber
+test_df["individualnumber"] = individualnumber
+# save to csv
 test_df.to_csv("submission.csv", index=False)
