@@ -59,6 +59,11 @@ def add_number_of_cards(df):
     df["number_of_cards"] = df.individualnumber.map(counts)
     return df
 
+def add_general_category(df):
+    df = df.copy()
+    df = df.merge(category_lookup_df, on="category_number", how="left")
+
+    return df
 
 def one_hot_encode(df, categorical_columns):
     df = df.copy()
@@ -119,14 +124,16 @@ def drop_columns(df, columns=["cardnumber", "individualnumber"]):
 def pipeline(df, train=True):
     category_cols = [
         "gender",
+        #"genel_kategori",
         #"city_code", # generates ~80 columns after one-hot encoding
     ]
-    print(df.shape)
+    
     df = df.copy()
     df = add_customer_data(df)
     df = add_number_of_transactions(df)
     df = add_total_amount_spent(df)
     df = add_number_of_cards(df)
+    #df = add_general_category(df)
     df = drop_columns(df)
     df = one_hot_encode(df, category_cols)
     df = fill_na(df)

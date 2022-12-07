@@ -28,8 +28,8 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 # create the sub models
 estimators = [
-    ("logreg", LogisticRegression()),
-    ("rf", RandomForestClassifier()),
+    #("logreg", LogisticRegression()),
+    #("rf", RandomForestClassifier()),
     ("adaboost", AdaBoostClassifier()),
     ("xgb", XGBClassifier()),
     ("lgbm", LGBMClassifier()),
