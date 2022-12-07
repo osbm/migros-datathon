@@ -13,7 +13,8 @@ from catboost import CatBoostClassifier
 import os
 
 if not os.path.exists("preprocessed_train.csv"):
-    raise Exception("preprocessed_train.csv does not exist. Please run preprocessing.py first")
+    raise Exception(
+        "preprocessed_train.csv does not exist. Please run preprocessing.py first")
 
 train_df = pd.read_csv("preprocessed_train.csv")
 
@@ -28,19 +29,6 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
 
-logreg = LogisticRegression()
-logreg.fit(X_train, y_train)
-y_pred = logreg.predict(X_test)
-print("logreg accuracy: ", accuracy_score(y_test, y_pred))
-print("logreg f1 score: ", f1_score(y_test, y_pred))
-
-# random forest
-
-rf = RandomForestClassifier()
-rf.fit(X_train, y_train)
-y_pred = rf.predict(X_test)
-print("rf accuracy: ", accuracy_score(y_test, y_pred))
-print("rf f1 score: ", f1_score(y_test, y_pred))
 
 xgb = XGBClassifier()
 xgb.fit(X_train, y_train)
@@ -115,3 +103,4 @@ test_df = test_df[["response"]]
 test_df["individualnumber"] = individualnumber
 # save to csv
 test_df.to_csv("submission.csv", index=False)
+print("Done.")

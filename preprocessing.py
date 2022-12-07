@@ -119,7 +119,7 @@ def pipeline(df, train=True):
     df = add_number_of_transactions(df)
     df = add_total_amount_spent(df)
     df = drop_columns(df)
-    df = one_hot_encode(df, category_cols)
+    # df = one_hot_encode(df, category_cols)
     df = fill_na(df)
 
     if train:
