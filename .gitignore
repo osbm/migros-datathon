@@ -5,4 +5,5 @@ data/
 *.log
 *.pkl
 *.zip
+*.png
 catboost_info/
