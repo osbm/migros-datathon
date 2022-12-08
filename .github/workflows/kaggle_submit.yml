@@ -31,6 +31,8 @@ jobs:
           cd data
           kaggle competitions download -c ${{ env.COMPETITION_NAME }}
           unzip ${{ env.COMPETITION_NAME }}.zip
+          cd ..
+          
 
       - name: Run the code
         run: |
