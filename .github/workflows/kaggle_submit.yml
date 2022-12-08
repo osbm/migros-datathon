@@ -4,6 +4,8 @@ on:
   push:
   workflow_dispatch:
   
+env:
+  COMPETITION_NAME: migros-datathon-coderspace
 
 jobs:
   kaggle-submitter:
@@ -27,8 +29,8 @@ jobs:
         run: |
           mkdir -p data
           cd data
-          kaggle competitions download -c santander-customer-transaction-prediction
-          unzip santander-customer-transaction-prediction.zip
+          kaggle competitions download -c ${{ env.COMPETITION_NAME }}
+          unzip ${{ env.COMPETITION_NAME }}.zip
 
       - name: Run the code
         run: |
@@ -38,7 +40,7 @@ jobs:
 
       - name: Submit to Kaggle
         run: |
-          kaggle competitions submit -c santander-customer-transaction-prediction -f submission.csv -m "Auto submit from GitHub Actions current branch: $GITHUB_REF commit hash: $GITHUB_SHA"
+          kaggle competitions submit -c ${{ env.COMPETITION_NAME }} -f submission.csv -m "Auto submit from GitHub Actions current branch: $GITHUB_REF commit hash: $GITHUB_SHA"
 
       - name: Get the score from Kaggle
         run: |
