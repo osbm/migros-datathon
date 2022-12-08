@@ -19,6 +19,9 @@ jobs:
 
       - name: Login to Kaggle
         uses: osbm/kaggle-login
+        with:
+          KAGGLE_USERNAME: {{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: {{ secrets.KAGGLE_KEY }}
 
       - name: Pull Competition Data
         run: |
@@ -47,5 +50,5 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git tag -a ${{ env.KAGGLE_SCORE }} -m "Auto tag from GitHub Actions current branch: $GITHUB_REF commit hash: $GITHUB_SHA"
           git push --tags
-          
+
 
