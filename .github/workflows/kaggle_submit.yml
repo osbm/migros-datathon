@@ -44,9 +44,9 @@ jobs:
         run: |
           kaggle competitions submit -c ${{ env.COMPETITION_NAME }} -f submission.csv -m "Auto submit from GitHub Actions current branch: $GITHUB_REF commit hash: $GITHUB_SHA"
 
-      - name: Get the score from Kaggle
+      - name: Get the last score from Kaggle
         run: |
-          python .github/scripts/get_kaggle_score.py
+          python .github/scripts/get_kaggle_score.py ${{ env.COMPETITION_NAME }}
           
       - name: Make a tag including the score
         run: |
