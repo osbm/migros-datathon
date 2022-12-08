@@ -20,8 +20,8 @@ jobs:
       - name: Login to Kaggle
         uses: osbm/kaggle-login@main
         with:
-          KAGGLE_USERNAME: {{ secrets.KAGGLE_USERNAME }}
-          KAGGLE_KEY: {{ secrets.KAGGLE_KEY }}
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
 
       - name: Pull Competition Data
         run: |
