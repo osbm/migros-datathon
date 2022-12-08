@@ -9,3 +9,4 @@ jupyter
 lightgbm
 #pycaret
 catboost
+imblearn

@@ -1,0 +1,58 @@
+name: Submit code to the Kaggle competition
+
+on:
+  push:
+  workflow_dispatch:
+  
+env:
+  COMPETITION_NAME: migros-datathon-coderspace
+
+jobs:
+  kaggle-submitter:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Login to Kaggle
+        uses: osbm/kaggle-login@main
+        with:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+
+      - name: Pull Competition Data
+        run: |
+          mkdir -p data
+          cd data
+          kaggle competitions download -c ${{ env.COMPETITION_NAME }}
+          unzip ${{ env.COMPETITION_NAME }}.zip
+          cd ..
+
+
+      - name: Run the code
+        run: |
+          python preprocess_transaction_sale.py
+          python preprocessing.py
+          python model.py
+
+      - name: Submit to Kaggle
+        run: |
+          kaggle competitions submit -c ${{ env.COMPETITION_NAME }} -f submission.csv -m "Auto submit from GitHub Actions current branch: $GITHUB_REF commit hash: $GITHUB_SHA"
+
+      - name: Get the last score from Kaggle
+        run: |
+          python .github/scripts/get_kaggle_score.py ${{ env.COMPETITION_NAME }}
+          
+      - name: Make a tag including the score
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git tag -a ${{ env.KAGGLE_SCORE }} -m "Auto tag from GitHub Actions current branch: $GITHUB_REF commit hash: $GITHUB_SHA"
+          git push --tags
+
+
