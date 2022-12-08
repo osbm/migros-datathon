@@ -10,7 +10,7 @@ competition_name = sys.argv[1]
 # get the score from the kaggle leaderboard
 def get_kaggle_score():
     result = subprocess.Popen(
-        f"kaggle competitions leaderboard -c [] --csv",
+        f"kaggle competitions leaderboard -c {competition_name} --csv",
     )
     df = pd.read_csv(result.stdout)
     return df["publicScore"].iloc[0]
