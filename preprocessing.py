@@ -139,8 +139,11 @@ def pipeline(df, train=True):
     df = fill_na(df)
 
     if train:
+        # we are splitting the data later, so we shouldn't resample before splitting
+        # because otherwise we will have data leakage
         # df = resample(df)
-        df = apply_SMOTE(df)
+        #df = apply_SMOTE(df) 
+        pass
     else:
         df = add_missing_columns(df)
     

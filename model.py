@@ -13,6 +13,8 @@ from catboost import CatBoostClassifier
 
 import os
 
+from imblearn.over_sampling import SMOTE
+
 if not os.path.exists("preprocessed_train.csv"):
     raise Exception("preprocessed_train.csv does not exist. Please run preprocessing.py first")
 
@@ -22,9 +24,15 @@ train_df = pd.read_csv("preprocessed_train.csv")
 y = train_df["response"]
 X = train_df.drop("response", axis=1)
 
+# use stratified sampling to split the data
+
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
+    X, y, test_size=0.1, random_state=42, stratify=y
 )
+
+smote = SMOTE(random_state=42)
+
+X_train, y_train = smote.fit_resample(X_train, y_train)
 
 # create the sub models
 estimators = [
