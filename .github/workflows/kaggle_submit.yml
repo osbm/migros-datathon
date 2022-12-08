@@ -18,7 +18,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Login to Kaggle
-        uses: osbm/kaggle-login
+        uses: osbm/kaggle-login@main
         with:
           KAGGLE_USERNAME: {{ secrets.KAGGLE_USERNAME }}
           KAGGLE_KEY: {{ secrets.KAGGLE_KEY }}
