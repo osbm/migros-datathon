@@ -124,7 +124,7 @@ def drop_columns(df, columns=["cardnumber", "individualnumber"]):
 def pipeline(df, train=True):
     category_cols = [
         "gender",
-        #"genel_kategori",
+        "genel_kategori",
         #"city_code", # generates ~80 columns after one-hot encoding
     ]
     
@@ -133,7 +133,7 @@ def pipeline(df, train=True):
     df = add_number_of_transactions(df)
     df = add_total_amount_spent(df)
     df = add_number_of_cards(df)
-    #df = add_general_category(df)
+    df = add_general_category(df)
     df = drop_columns(df)
     df = one_hot_encode(df, category_cols)
     df = fill_na(df)
