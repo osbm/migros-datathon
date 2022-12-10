@@ -5,6 +5,7 @@ from sklearn.metrics import accuracy_score, f1_score
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import RandomizedSearchCV
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import VotingClassifier
@@ -51,15 +52,13 @@ param_grid = {
     "ensemble__xgb__n_estimators": [50, 100, 200],
     "ensemble__lgbm__n_estimators": [50, 100, 200],
     "ensemble__cat__n_estimators": [50, 100, 200],
+    "ensemble__voting": ["hard", "soft"],
+    "ensemble__weights": [[1, 1, 1, 1], [2, 1, 1, 1], [1, 2, 1, 1], [1, 1, 2, 1], [1, 1, 1, 2]],
+    "ensemble__flatten_transform": [True, False],
 }
-""" param_grid = {
-    "adaboost__n_estimators": [50, 100, 200],
-    "xgb__n_estimators": [50, 100, 200],
-    "lgbm__n_estimators": [50, 100, 200],
-    "cat__n_estimators": [50, 100, 200],
-}
- """
-grid = GridSearchCV(estimator=model, param_grid=param_grid, cv=5, scoring="f1", verbose=1)
+
+grid = RandomizedSearchCV(estimator=model, param_distributions=param_grid, n_iter=100, cv=5, scoring="f1", verbose=1)
+#grid = GridSearchCV(estimator=model, param_grid=param_grid, cv=5, scoring="f1", verbose=1)
 grid_result = grid.fit(X, y)
 
 print("Best score:", grid_result.best_score_)
