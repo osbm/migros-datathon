@@ -120,6 +120,27 @@ def drop_columns(df, columns=["cardnumber", "individualnumber"]):
     df = df.drop(columns, axis=1)
     return df
 
+def add_most_common_cities(df):
+    df = df.copy()
+    df["is_istanbul"] = df.city_code.apply(lambda x: 1 if x == 34 else 0)
+    df["is_ankara"] = df.city_code.apply(lambda x: 1 if x == 6 else 0)
+    df["is_izmir"] = df.city_code.apply(lambda x: 1 if x == 35 else 0)
+    df["is_antalya"] = df.city_code.apply(lambda x: 1 if x == 7 else 0)
+    # if the cift code outside 1-81, then it is unknown
+    df["is_unk_city"] = df.city_code.apply(lambda x: 1 if x not in range(1, 82) else 0)
+
+    # drop city_code column
+    df = df.drop("city_code", axis=1)
+    return df
+
+
+def add_birth_decade(df):
+    df = df.copy()
+    df["is_90s"] = df.birthdate.apply(lambda x: 1 if x >= 1990 and x < 2000 else 0)
+    df["is_80s"] = df.birthdate.apply(lambda x: 1 if x >= 1980 and x < 1990 else 0)
+    df["is_70s"] = df.birthdate.apply(lambda x: 1 if x >= 1970 and x < 1980 else 0)
+    df["is_2000s"] = df.birthdate.apply(lambda x: 1 if x >= 2000 and x < 2010 else 0)
+    return df
 
 def pipeline(df, train=True):
     category_cols = [
@@ -134,6 +155,7 @@ def pipeline(df, train=True):
     df = add_total_amount_spent(df)
     df = add_number_of_cards(df)
     df = add_general_category(df)
+    df = add_most_common_cities(df)
     df = drop_columns(df)
     df = one_hot_encode(df, category_cols)
     df = fill_na(df)
