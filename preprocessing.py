@@ -48,9 +48,16 @@ def add_number_of_transactions(df):
 
 def add_total_amount_spent(df):
     df = df.copy()
-    df["total_amount_spent"] = df.cardnumber.map(
-        transaction_sale_preprocessed_df.groupby("cardnumber").amount.sum()
-    )
+    # there are multiple rows for each individualnumber
+    # we will sum the total expenditure for each individualnumber
+    print(df.shape)
+    tsp_df = transaction_sale_preprocessed_df.groupby("individualnumber").agg( {"total_expenditure": "sum"} )
+    tsp_df.reset_index(inplace=True)
+
+    # sum
+    df = df.merge(tsp_df, on="individualnumber", how="left")
+    print(df.shape)
+
     return df
 
 def add_number_of_cards(df):
@@ -83,7 +90,7 @@ def resample(df):
 
 def fill_na(df):
     df = df.copy()
-    df["total_amount_spent"] = df["total_amount_spent"].fillna(0)
+    df["total_expenditure"] = df["total_expenditure"].fillna(0)
     df["number_of_transactions"] = df["number_of_transactions"].fillna(0)
     df = df.fillna(df.mean())
     return df
