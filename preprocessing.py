@@ -28,7 +28,6 @@ def add_customer_data(df):
     df = df.merge(customer_df, on="individualnumber", how="left")
 
     df = df.merge(customer_account_df, on="individualnumber", how="left")
-    # print all the new rows that are added
 
     # some customers have multiple cardnumbers
     # we will use the first cardnumber
@@ -50,13 +49,13 @@ def add_total_amount_spent(df):
     df = df.copy()
     # there are multiple rows for each individualnumber
     # we will sum the total expenditure for each individualnumber
-    print(df.shape)
+    
     tsp_df = transaction_sale_preprocessed_df.groupby("individualnumber").agg( {"total_expenditure": "sum"} )
     tsp_df.reset_index(inplace=True)
 
     # sum
     df = df.merge(tsp_df, on="individualnumber", how="left")
-    print(df.shape)
+    
 
     return df
 
@@ -141,12 +140,34 @@ def add_most_common_cities(df):
     return df
 
 
+
 def add_birth_decade(df):
     df = df.copy()
-    df["is_90s"] = df.birthdate.apply(lambda x: 1 if x >= 1990 and x < 2000 else 0)
-    df["is_80s"] = df.birthdate.apply(lambda x: 1 if x >= 1980 and x < 1990 else 0)
-    df["is_70s"] = df.birthdate.apply(lambda x: 1 if x >= 1970 and x < 1980 else 0)
-    df["is_2000s"] = df.birthdate.apply(lambda x: 1 if x >= 2000 and x < 2010 else 0)
+    df["is_90s"] = df.dateofbirth.apply(lambda x: 1 if x >= 1990 and x < 2000 else 0)
+    df["is_80s"] = df.dateofbirth.apply(lambda x: 1 if x >= 1980 and x < 1990 else 0)
+    df["is_70s"] = df.dateofbirth.apply(lambda x: 1 if x >= 1970 and x < 1980 else 0)
+    df["is_2000s"] = df.dateofbirth.apply(lambda x: 1 if x >= 2000 and x < 2010 else 0)
+    return df
+
+def add_total_amount_spent_on_general_categories(df):
+    df = df.copy()
+    grouped_tsp_df = transaction_sale_preprocessed_df.groupby("individualnumber")
+    
+    def get_total_amount_spent_on_general_categories(group):
+        # gets input of all the rows belonging to a single individualnumber
+        # returns the total amount spent on general categories (5 categories)
+        
+        total_amount_spent_on_each_category = group.groupby("genel_kategori").agg({"total_expenditure": "sum"})
+        return total_amount_spent_on_each_category
+
+    grouped_tsp_df = grouped_tsp_df.apply(get_total_amount_spent_on_general_categories)
+    grouped_tsp_df = grouped_tsp_df.unstack()
+    grouped_tsp_df = grouped_tsp_df.fillna(0)
+    grouped_tsp_df.columns = grouped_tsp_df.columns.droplevel(0)
+    grouped_tsp_df = grouped_tsp_df.reset_index()
+    
+    # add the total amount spent on general categories to the main dataframe
+    df = df.merge(grouped_tsp_df, on="individualnumber", how="left")
     return df
 
 def pipeline(df, train=True):
@@ -155,7 +176,7 @@ def pipeline(df, train=True):
         "genel_kategori",
         #"city_code", # generates ~80 columns after one-hot encoding
     ]
-    
+
     df = df.copy()
     df = add_customer_data(df)
     df = add_number_of_transactions(df)
@@ -163,6 +184,8 @@ def pipeline(df, train=True):
     df = add_number_of_cards(df)
     df = add_general_category(df)
     df = add_most_common_cities(df)
+    df = add_birth_decade(df)
+    df = add_total_amount_spent_on_general_categories(df)
     df = drop_columns(df)
     df = one_hot_encode(df, category_cols)
     df = fill_na(df)
