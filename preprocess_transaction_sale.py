@@ -27,5 +27,8 @@ transaction_sale_df["individualnumber"] = transaction_sale_df.cardnumber.map(
     customer_account_df.set_index("cardnumber").individualnumber
 )
 
+transaction_sale_df["total_expenditure"] = transaction_sale_df["amount"] * \
+    transaction_sale_df["quantity"]
+
 # save the transaction_sale_df
 transaction_sale_df.to_csv("transaction_sale_preprocessed.csv", index=False)

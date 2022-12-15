@@ -3,5 +3,6 @@ data/
 *.csv
 *.pyc
 *.log
+*.png
 *.pkl
 catboost_info/
